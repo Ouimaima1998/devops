@@ -3,7 +3,7 @@ services:
   db:
     image: mysql:5.7
     container_name: db
-    restart: always
+    restart : always
     ports:
       - "33060:3306"
     environment:
@@ -14,16 +14,20 @@ services:
     networks:
       - backend-network
     
+  
   mysql-exporter:
+  
     image: prom/mysqld-exporter
     container_name: mysql-exporter
     command: 
-      - "--config.my-cnf=/mysql_exporter/.my.cnf"
-      - "--mysqld.address=db:3306"
-      - "--web.listen-address=0.0.0.0:9104"
-      - "--web.telemetry-path=/metrics"
-      - "--mysqld.username=root"
-      - "--log.level=info"
+    - "--config.my-cnf=/mysql_exporter/.my.cnf"
+    - "--mysqld.address=db:3306"
+    - "--web.listen-address=0.0.0.0:9104"
+    - "--web.telemetry-path=/metrics"
+    - "--mysqld.username=root"
+    - "--log.level=info"
+
+     
     restart: unless-stopped
     ports:
       - "9104:9104"
@@ -32,8 +36,8 @@ services:
       - MYSQLD_EXPORTER_USERNAME=root
       - MYSQLD_EXPORTER_PASSWORD=my-secret-pw
     networks:
-      - backend-network
-
+      - backend-network     
+     
   backend:
     depends_on:
       - db
@@ -56,27 +60,9 @@ services:
     build: ./frontend
     ports:
       - 8082:80
-    networks:
-      - backend-network
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    restart: always
-    ports:
-      - "8085:80"
-    environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: my-secret-pw
-    depends_on:
-      - db
-    networks:
-      - backend-network
-
 networks:
   backend-network:
     external: true
-
 volumes:
   db_data:  # Define the named volume here
   springBootLogs:
